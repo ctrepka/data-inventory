@@ -194,5 +194,4 @@ class DataInventory:
 
 
 di = DataInventory()
-print(di.config_defaults["input_directory"])
-#di.runWizard().getPaths().getFeatureClassMeta().outputCsv()
+di.runWizard().getPaths().getFeatureClassMeta().outputCsv()
