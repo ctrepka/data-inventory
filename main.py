@@ -105,16 +105,12 @@ class DataInventory:
                 props = {
                     "path": None,
                     "spatialReference": None,
-                    "featureType": None,
                     "shapeType": None,
-                    "shapeFieldName": None,
                 }
                 desc = arcpy.Describe(fcPath)
                 props["path"] = fcPath
-                props["spatialReference"] = desc.spatialReference.name
-                props["featureType"] = desc.featureType
-                props["shapeType"] = desc.shapeType
-                props["shapeFieldName"] = desc.shapeFieldName
+                props["spatialReference"] = desc.spatialReference.name if hasattr(desc, "spatialReference") else "NONE"
+                props["shapeType"] = desc.shapeType if hasattr(desc, "shapeType") else "NONE"
 
                 fcs.append(props)
 
