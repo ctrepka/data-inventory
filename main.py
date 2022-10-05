@@ -70,7 +70,7 @@ class DataInventory:
 
     def getPathsFromDirectory(self):
         print("@@@ GETTING PATHS FROM DIRECTORY {} @@@".format(self.input_directory))
-        patterns = ("*.gdb", "*.gdb.zip", "*.shp")
+        patterns = ("*.gdb", "*.shp")
         file_paths = [file for file in Path(self.input_directory).iterdir() if any(
             file.match(p) for p in patterns)]
 
@@ -86,7 +86,9 @@ class DataInventory:
         else:
             print("@@@ CANNOT GET PATHS OF FILES, NO METHOD SELECTED. @@@")
             self.configure_input_method()
-
+        
+        print('@@ DONE. {} PATHS FOUND.'.format(len(self.file_paths)))
+        
         return self
 
     def getGdbFeatureClassMeta(self, fileGDBPath):
@@ -116,9 +118,9 @@ class DataInventory:
 
         for fc in fcs:
             print(fc)
-
+            
         self.feature_class_data = self.feature_class_data + fcs
-
+                
         return self
 
     def getShpFeatureClassMeta(self, fileSHPPath):
@@ -158,14 +160,18 @@ class DataInventory:
         with open(self.output_directory + "/output/" + self.output_name):
             writer = csv.writer(self.output_directory +
                                 "/output/" + self.output_name)
-
+                                
+        print('@@ DONE @@')
+        return self
+        
     def getFeatureClassMeta(self):
+        print('@@@ GETTING FEATURE CLASS METADATA FOR {} FILE PATHS'.format(len(self.file_paths)))
         for i in self.file_paths:
             if "gdb" in str(i):
                 self.getGdbFeatureClassMeta(r'{}'.format(str(i)))
             elif "shp" in str(i):
                 self.getShpFeatureClassMeta(r'{}'.format(str(i)))
-
+        
         return self
 
     def outputCsv(self):
@@ -187,6 +193,9 @@ class DataInventory:
             writer = csv.DictWriter(csvfile, fieldnames=headers)
             writer.writeheader()
             writer.writerows(self.feature_class_data)
+        
+        print('\n\n@@@@ CSV OUTPUT COMPLETE. STORED IN {} @@@@'.format(r'{}'.format(self.output_directory)))
+        
 
 
 di = DataInventory()
