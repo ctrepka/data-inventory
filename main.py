@@ -105,14 +105,16 @@ class DataInventory:
             for featureClass in arcpy.ListFeatureClasses(feature_dataset=ds):
                 fcPath = os.path.join(arcpy.env.workspace, ds, featureClass)
                 props = {
-                    "path": None,
-                    "spatialReference": None,
-                    "shapeType": None,
+                    "path": 'NONE',
+                    "spatialReference": 'NONE',
+                    "shapeType": 'NONE',
                 }
                 desc = arcpy.Describe(r'{}'.format(fcPath))
                 props["path"] = fcPath
-                props["spatialReference"] = desc.spatialReference.name if hasattr(desc, "spatialReference") else "NONE"
-                props["shapeType"] = desc.shapeType if hasattr(desc, "shapeType") else "NONE"
+                if hasattr(desc, "spatialReference"):
+                    props["spatialReference"] = desc.spatialReference.name 
+                if hasattr(desc, "shapeType"):
+                    props["shapeType"] = desc.shapeType 
 
                 fcs.append(props)
 
@@ -132,18 +134,16 @@ class DataInventory:
 
         fcPath = fileSHPPath
         props = {
-            "path": None,
-            "spatialReference": None,
-            "featureType": None,
-            "shapeType": None,
-            "shapeFieldName": None,
+            "path": 'NONE',
+            "spatialReference": 'NONE',
+            "shapeType": 'NONE',
         }
         desc = arcpy.Describe(r'{}'.format(fcPath))
         props["path"] = fcPath
-        props["spatialReference"] = desc.spatialReference.name
-        props["featureType"] = desc.featureType
-        props["shapeType"] = desc.shapeType
-        props["shapeFieldName"] = desc.shapeFieldName
+        if hasattr(desc, "spatialReference"):
+            props["spatialReference"] = desc.spatialReference.name
+        if hasattr(desc, 'shapeType'):
+            props["shapeType"] = desc.shapeType
 
         fcs.append(props)
 
@@ -178,9 +178,7 @@ class DataInventory:
         props = {
             "path": None,
             "spatialReference": None,
-            "featureType": None,
             "shapeType": None,
-            "shapeFieldName": None,
         }
         headers = props.keys()
 
