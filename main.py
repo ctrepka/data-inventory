@@ -107,7 +107,7 @@ class DataInventory:
                     "spatialReference": None,
                     "shapeType": None,
                 }
-                desc = arcpy.Describe(fcPath)
+                desc = arcpy.Describe(r'{}'.format(fcPath))
                 props["path"] = fcPath
                 props["spatialReference"] = desc.spatialReference.name if hasattr(desc, "spatialReference") else "NONE"
                 props["shapeType"] = desc.shapeType if hasattr(desc, "shapeType") else "NONE"
@@ -136,7 +136,7 @@ class DataInventory:
             "shapeType": None,
             "shapeFieldName": None,
         }
-        desc = arcpy.Describe(fcPath)
+        desc = arcpy.Describe(r'{}'.format(fcPath))
         props["path"] = fcPath
         props["spatialReference"] = desc.spatialReference.name
         props["featureType"] = desc.featureType
@@ -162,9 +162,9 @@ class DataInventory:
     def getFeatureClassMeta(self):
         for i in self.file_paths:
             if "gdb" in str(i):
-                self.getGdbFeatureClassMeta(str(i))
+                self.getGdbFeatureClassMeta(r'{}'.format(str(i)))
             elif "shp" in str(i):
-                self.getShpFeatureClassMeta(str(i))
+                self.getShpFeatureClassMeta(r'{}'.format(str(i)))
 
         return self
 
