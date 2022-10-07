@@ -86,13 +86,30 @@ class DataInventory:
         else:
             print("@@@ CANNOT GET PATHS OF FILES, NO METHOD SELECTED. @@@")
             self.configure_input_method()
-        
+
         print('@@ DONE. {} PATHS FOUND.'.format(len(self.file_paths)))
-        
+
         return self
 
     def getGdbFeatureClassMeta(self, fileGDBPath):
         print("@@@ GETTING .GDB INFO FROM .GDB FILE AT: {} @@@".format(fileGDBPath))
+
+        if not os.path.isfile(fileGDBPath) and not os.path.isdir(fileGDBPath):
+            arcpy.env.workspace = fileGDBPath
+            props = {
+                "path": fileGDBPath,
+                "spatialReference": 'ERROR: PATH NOT FOUND',
+                "shapeType": 'ERROR: PATH NOT FOUND',
+            }
+            nopaths = [props]
+            print("@@ WARNING: FAILED TO FIND PATH {} @@".format(fileGDBPath))
+            
+            self.feature_class_data = self.feature_class_data + nopaths
+            
+            for fc in nopaths:
+                print(fc)
+
+            return self
 
         arcpy.env.workspace = fileGDBPath
 
@@ -112,23 +129,38 @@ class DataInventory:
                 desc = arcpy.Describe(r'{}'.format(fcPath))
                 props["path"] = fcPath
                 if hasattr(desc, "spatialReference"):
-                    props["spatialReference"] = desc.spatialReference.name 
+                    props["spatialReference"] = desc.spatialReference.name
                 if hasattr(desc, "shapeType"):
-                    props["shapeType"] = desc.shapeType 
+                    props["shapeType"] = desc.shapeType
 
                 fcs.append(props)
 
         for fc in fcs:
             print(fc)
-            
+
         self.feature_class_data = self.feature_class_data + fcs
-                
+
         return self
 
     def getShpFeatureClassMeta(self, fileSHPPath):
         print("@@@ GETTING .SHP INFO FROM .SHP FILE AT: {} @@@".format(fileSHPPath))
 
-        arcpy.env.workspace = fileSHPPath
+        if not os.path.isfile(fileSHPPath) and not os.path.isdir(fileSHPPath):
+            arcpy.env.workspace = fileSHPPath
+            props = {
+                "path": fileSHPPath,
+                "spatialReference": 'ERROR: PATH NOT FOUND',
+                "shapeType": 'ERROR: PATH NOT FOUND',
+            }
+            nopaths = [props]
+            print("@@ WARNING: FAILED TO FIND PATH {} @@".format(fileSHPPath))
+            
+            self.feature_class_data = self.feature_class_data + nopaths
+            
+            for fc in nopaths:
+                print(fc)
+
+            return self
 
         fcs = []
 
@@ -160,10 +192,10 @@ class DataInventory:
         with open(self.output_directory + "/output/" + self.output_name):
             writer = csv.writer(self.output_directory +
                                 "/output/" + self.output_name)
-                                
+
         print('@@ DONE @@')
         return self
-        
+
     def getFeatureClassMeta(self):
         print('@@@ GETTING FEATURE CLASS METADATA FOR {} FILE PATHS'.format(len(self.file_paths)))
         for i in self.file_paths:
@@ -171,7 +203,7 @@ class DataInventory:
                 self.getGdbFeatureClassMeta(r'{}'.format(str(i)))
             elif "shp" in str(i):
                 self.getShpFeatureClassMeta(r'{}'.format(str(i)))
-        
+
         return self
 
     def outputCsv(self):
@@ -191,9 +223,8 @@ class DataInventory:
             writer = csv.DictWriter(csvfile, fieldnames=headers)
             writer.writeheader()
             writer.writerows(self.feature_class_data)
-        
+
         print('\n\n@@@@ CSV OUTPUT COMPLETE. STORED IN {} @@@@'.format(r'{}'.format(self.output_directory)))
-        
 
 
 di = DataInventory()
